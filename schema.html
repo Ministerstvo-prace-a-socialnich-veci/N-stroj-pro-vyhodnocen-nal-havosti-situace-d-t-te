@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Schéma postupu</title>
+  <style>
+    :root {
+      --bg:#f6f8fb; --card:#fff; --accent:#1366d6;
+      --danger:#d93b2f; --orange:#f08a24; --green:#2f9d54;
+      --muted:#6b7280; --maxw:1200px;
+    }
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:var(--bg);margin:0;color:#111}
+    .wrap{max-width:var(--maxw);margin:20px auto;padding:18px}
+    h1{margin-top:0;font-size:1.4rem}
+    .lead{color:var(--muted);margin-bottom:20px}
+    .grid{display:grid;gap:16px}
+    @media(min-width:900px){.grid{grid-template-columns:1fr 1fr}}
+    .card{background:var(--card);padding:16px;border-radius:12px;
+      box-shadow:0 6px 16px rgba(17,24,39,0.06)}
+    .urgent{border-left:6px solid var(--danger)}
+    .nonurgent{border-left:6px solid var(--green)}
+    h2{margin:0 0 10px;font-size:1.2rem}
+    ul{margin:0;padding-left:20px}
+    li{margin-bottom:6px}
+    footer{margin-top:30px;color:var(--muted);font-size:0.9rem}
+    a.back{display:inline-block;margin-bottom:16px;color:var(--accent);text-decoration:none;font-weight:600}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a href="index.html" class="back">← Zpět na nástroj</a>
+    <h1>Schéma postupu při vyhodnocení naléhavosti</h1>
+    <div class="lead">Přehled kroků po vyhodnocení situace dítěte.</div>
+
+    <div class="grid">
+      <div class="card urgent">
+        <h2>Situace vyhodnocena jako NALÉHAVÁ</h2>
+        <ul>
+          <li>Rozhodnutí o § 6 zákona č. 359/1999 Sb. (dítě spadá / nespada)</li>
+          <li>Rozhodnutí o dalším setrvání dítěte (u rodičů, osoby blízké, nutné odebrání)</li>
+          <li>Identifikace bezpečné osoby</li>
+          <li>Plán bezpečí</li>
+          <li>Informace pro dítě a rodinu</li>
+          <li>Zapojení odborníků</li>
+          <li>Příprava dítěte na změnu prostředí</li>
+          <li>Mapování míry rizik</li>
+          <li>Ověření plánu bezpečí</li>
+          <li>Osobní kontakt s dítětem</li>
+          <li>Předběžný plán práce s dítětem a rodinou</li>
+          <li>Zpracování podrobného vyhodnocení a IPOD</li>
+          <li>Přehodnocení naléhavosti situace</li>
+        </ul>
+      </div>
+
+      <div class="card nonurgent">
+        <h2>Situace vyhodnocena jako NENALÉHAVÁ</h2>
+        <ul>
+          <li>Rozhodnutí o § 6 zákona č. 359/1999 Sb. (dítě spadá / nespada)</li>
+          <li>Dítě nechávám v rodině nebo u osoby blízké</li>
+          <li>Informace pro dítě a rodinu</li>
+          <li>Rodičům a dítěti poskytnuta/neposkytnuta poradenská činnost dle §10 a §11 ZSPOD</li>
+          <li>Zapojení odborníků</li>
+          <li>Příprava dítěte na změnu prostředí</li>
+          <li>Mapování potřeb dítěte</li>
+          <li>Osobní kontakt s rodinou a dítětem</li>
+          <li>Realizace PK, IPK, RK</li>
+          <li>Zpracování podrobného vyhodnocení a IPOD</li>
+          <li>Přehodnocení situace dítěte a rodiny</li>
+          <li>Rozhodnutí zda se situace změnila ve své naléhavosti</li>
+          <li>Aktualizace informací</li>
+        </ul>
+      </div>
+    </div>
+
+    <footer>
+      Toto schéma slouží jako podpůrný materiál k nástroji pro vyhodnocení naléhavosti situace dítěte.
+    </footer>
+  </div>
+</body>
+</html>

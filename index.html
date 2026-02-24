@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+
+<html lang="cs">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Vyhodnocení naléhavosti situace dítěte</title>
+<style>
+:root{
+  --bg:#f6f8fb; --card:#fff; --accent:#1366d6;
+  --danger:#d93b2f; --orange:#f08a24; --green:#2f9d54;
+  --muted:#6b7280; --maxw:1100px;
+}
+*{box-sizing:border-box}
+body{font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);margin:0;color:#111}
+.wrap{max-width:var(--maxw);margin:20px auto;padding:18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+h1{margin:0;font-size:1.2rem}
+.lead{color:var(--muted);margin-top:6px}
+.card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 24px rgba(17,24,39,0.06);margin-top:14px}
+form .section{margin-bottom:14px}
+.question-row{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eef2f6}
+.question-row:last-child{border-bottom:0}
+.q{flex:1;min-width:200px}
+.hint{font-size:0.9rem;color:var(--muted);margin-top:6px}
+.radios{display:flex;gap:12px;align-items:center}
+label.inline{display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+input[type="radio"]{transform:scale(1.05)}
+.controls{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+button{background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+button.secondary{background:transparent;color:var(--accent);border:1px solid #dbeafe}
+button.schema-btn {background:#2f9d54;color: #fff;}
+button.schema-btn:hover {background: #278046;}
+.small{font-size:0.9rem;color:var(--muted)}
+/* Toggle „Zobrazit více“ jako čistý text */
+.toggleBtn {
+  background: none;      /* žádné pozadí */
+  border: none;          /* žádný rámeček */
+  padding: 0;            /* žádné odsazení */
+  font-weight: bold;     /* tučný text */
+  text-decoration: underline; /* podtržený text */
+  color: var(--accent);  /* akcentní barva, nebo jiná dle potřeby */
+  cursor: pointer;       /* ukazatel ruky */
+  font-size: 0.95rem;    /* přiměřená velikost textu */
+}
+.result-wrap{margin-top:18px}
+.hidden{display:none}
+.steps {display:flex;flex-direction:column;gap:0px;}
+ }
+.step-card{border-radius:10px;padding:14px;color:#fff;display:flex;gap:12px;align-items:flex-start}
+.step-number{min-width:42px;height:42px;border-radius:8px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.05rem}
+.step-body{flex:1}
+.step-title{font-weight:700;margin:0 0 6px}
+.step-meta{font-size:0.9rem;background:rgba(255,255,255,0.12);padding:8px;border-radius:8px;margin-top:8px}
+.urgent{background:linear-gradient(90deg,#fff7f6,var(--danger));color:#111}
+.urgent .step-number{background:rgba(0,0,0,0.06)}
+.orange{background:linear-gradient(90deg,#fff8f2,var(--orange));color:#111}
+.orange .step-number{background:rgba(0,0,0,0.06)}
+.green{background:linear-gradient(90deg,#f5fff7,var(--green));color:#111}
+.green .step-number{background:rgba(0,0,0,0.06)}
+.result-box{padding:12px;border-radius:10px;margin-bottom:10px}
+.result-urgent{background:#fff1f0;border-left:6px solid var(--danger)}
+.result-nonurgent{background:#f0fff4;border-left:6px solid var(--green)}
+/* Oranžové kroky bez červeného proužku */
+.step-card.orange {
+  background-color: #fdba74; /* jednotná oranžová */
+  background-image: none;    /* vypne gradient */
+}
+/* Jemné ladění textu a okraje, pokud chceš víc vzduchu */
+.step-card.orange .step-body {
+  padding-bottom: 6px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Nástroj pro vyhodnocení naléhavosti situace dítěte</h1>
+<div class="lead">Odpovězte ANO/NE. Pokud alespoň jedna odpověď = ANO → Naléhavá situace.</div>
+</header>
+<main aria-labelledby="mainTitle" class="card" role="main">
+<h2 id="mainTitle" style="margin-top:0">Otázky</h2>
+<form autocomplete="off" id="triageForm" onsubmit="return false;">
+<!-- Otázky 1–9 -->
+<div aria-label="Ohrožení života" class="section">
+<div class="question-row">
+<div class="q"><strong>1) Je dítě aktuálně ohroženo na životě?</strong>
+<div class="hint">např. opuštěné bez péče při úmrtí/hospitalizaci rodiče, akutní intoxikaci apod.</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q1" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q1" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+<div class="question-row">
+<div class="q"><strong>2) Ohrožuje dítě aktuálně sebe samo na životě?</strong>
+<div class="hint">např. sebevražedné sklony, sebepoškozování, odmítá léčbu, anorexie/bulimie</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q2" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q2" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+<div class="question-row">
+<div class="q"><strong>3) Je osoba pečující o dítě aktuálně ohrožena na životě?</strong>
+<div class="hint">např. domácí násilí, bez možnosti ochrany</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q3" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q3" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+<div aria-label="Ohrožení bezpečí" class="section">
+<div class="question-row">
+<div class="q"><strong>4) Je dítě aktuálně ohroženo na zdraví?</strong>
+<div class="hint">např. akutní zanedbávání zdravotní péče, jsou patrné známky užívání nepřiměřených výchovných prostředků ohrožujících fyzické a psychické zdraví dítěte, opakovaná hospitalizace s různými úrazy a zraněními</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q4" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q4" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+<div class="question-row">
+<div class="q"><strong>5) Pozorujete známky vážného zanedbání péče?</strong>
+<div class="hint">např. dítě má hlad, žízeň, je nedostatečně oblečené, je ohroženo stavem bydlení, dítě zcela bez přístřeší</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q5" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q5" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+<div class="question-row">
+<div class="q"><strong>6) Má dítě záchvat panické ataky, či jiný, psychogenní záchvat (či duševní krizi) vyžadující okamžitý zásah lékařů?</strong>
+<div class="hint">Např. je zmatené v myšlení i řeči, jedná nelogicky</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q6" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q6" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+<div aria-label="Ohrožení trestnou činností" class="section">
+<div class="question-row">
+<div class="q"><strong>7) Je aktuálně ohroženo bezpečí dítěte?</strong>
+<div class="hint">např. bez přiměřeného dohledu, rodiče pod vlivem alkoholu nebo návykových látek</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q7" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q7" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+<div class="question-row">
+<div class="q"><strong>8) Aktuálně absentuje náhled rodiče na rizikovost svého jednání a chování?</strong>
+<div class="hint">např. v důsledku psychické poruchy/nemoci, bizarní prvky chování, absentuje náhled rodiče na rizikovost aktuálního jednání a chování dítěte</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q8" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q8" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+<div aria-label="Přání dítěte" class="section">
+<div class="question-row">
+<div class="q"><strong>9) Má pečující osoba záchvat (panika/duševní krize) znemožňující péči?</strong>
+<div class="hint">např. pečující osoba se neorientuje v čase či místě, projevuje se zmateností v myšlení i vyjadřování</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q9" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q9" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+<div class="question-row">
+<div class="q"><strong>10) Je podezření, že je na dítěti páchána trestná činnost?</strong>
+<div class="hint">např. fyzické a psychické týrání, sexuální zneužívání, hrubé zanedbávání ohrožující normální vývoj</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q8" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q8" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+<div class="question-row">
+<div class="q"><strong>11) Je dítě nuceno k páchání trestné činnosti?</strong>
+<div class="hint">např. je nuceno ke krádežím, je nuceno k ublížení na zdraví</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q8" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q8" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+<div class="question-row">
+<div class="q"><strong>12) Přeje si dítě řešit vlastní aktuální situaci?</strong>
+<div class="hint">např. chce odejít z péče, hlásí šikanu</div>
+</div>
+<div class="radios">
+<label class="inline"><input name="q8" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q8" type="radio" value="ne"/> NE</label>
+</div>
+</div>
+</div>
+<div class="controls">
+<button id="evaluateBtn" type="button">Vyhodnotit situaci</button>
+<button class="secondary" id="resetBtn" type="button">Resetovat odpovědi</button>
+<a href="schema.html" target="_blank"><button class="schema-btn" type="button">Otevřít schéma postupu</button></a>
+<div class="small" style="margin-left:auto">Pokud odpovíte ANO na některou otázku → opatření bezodkladně.</div>
+</div>
+</form>
+<div class="result-wrap" id="resultWrap"></div>
+<!-- URGENT CONTENT -->
+<div class="hidden" id="urgentContent">
+<div class="result-box result-urgent">
+<strong>NÁLEHAVÁ SITUACE — jednat bezodkladně</strong>
+<div class="small">Pokud na libovolnou otázku odpovíte ANO, je nutné realizovat opatření bezodkladně.</div>
+</div>
+<div class="steps">
+<!-- KROKY 1–9 s rozbalitelnými detaily -->
+<!-- Step 1 -->
+<div class="step-card urgent">
+<div class="step-number">1</div>
+<div class="step-body">
+<strong>Najděte bezpečnou osobu / místo pro dítě.</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+<div class="extraContent hidden">
+<p><strong>Časový rámec:</strong> Bezodkladně </p>
+<p><strong>Při identifikaci bezpečné osoby mohou zpravidla nastat tyto situace:</strong></p>
+<ol>
+<li>Dítě zůstává v rodině s rodičem/pečovatelem.</li>
+<li>Dítě zůstává v rodině s osobou blízkou.</li>
+<li>Dítě odchází z bydliště s rodičem nebo osobou blízkou.</li>
+<li>Dítě je nutné bezprostředně odebrat ze stávajícího prostředí.</li>
+</ol>
+<p><strong>Pro situace, kdy dítě opouští svoje prostředí:</strong></p>
+<ul>
+<li>V domácnosti identifikujte bezpečnou osobu, se kterou může dítě odejít.</li>
+<li>Zajistěte bezpečné místo, kam dítě půjde.</li>
+<li>Navažte vztah s dítětem, v klidné a srozumitelné formě vysvětlete a objasněte.</li>
+</ul>
+<p>V rámci práce s domácím násilím v rodině nebo CAN je nutné dbát na práci s rizikem a s tím související nutné právní kroky vedoucí k ochraně dítěte. Pokud dítě nemůže setrvat v péči rodiče, ani ve svém domácím prostředí s jinou osobou, je nutné poskytnout dítěti jiné bezpečné prostředí, a to s ohledem na nejlepší zájem dítěte.</p>
+<p><strong>Možnosti umístění volte v tomto pořadí:</strong></p>
+<ol>
+<li>Širší rodina</li>
+<li>PPPD</li>
+<li>PP</li>
+<li>ZDVOP, ÚZ, nemocnice a jiné</li>
+</ol>
+<p>V rámci bezpečí a ochrany dítěte zajistěte odpovědný doprovod a co nejvíce eliminujte strach dítěte z neznámého prostředí.</p>
+<hr>
+<p><strong>Právní rámec:</strong>• zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí: § 10 odst. 3 písm. c);
+• vyhláška č. 473/2012 Sb.: § 1 zejm. písm. b) bod 4., písm. c) bod 2., písm. d) bod 2.
+</div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="step-card urgent">
+<div class="step-number">2</div>
+<div class="step-body">
+ <strong> Sestavte a vysvětlete plán bezpečí</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+<div class="extraContent hidden">
+<p><strong>Časový rámec:</strong> Bezodkladně </p>
+<ul>
+<h4>Navázání vztahu a komunikace s dítětem a rodičem</h4>
+<ul>
+<li>Představte se dítěti a rodiči.</li>
+<li>Navažte vztah s dítětem v klidné a srozumitelné formě – vysvětlete a objasněte mu situaci.</li>
+<li>Vytvořte bezpečné prostředí pro dítě, rodiče či pečovatele.</li>
+</ul>
+<h4>Tvorba a vysvětlení plánu bezpečí</h4>
+<ul>
+<li>Sestavte a srozumitelně vysvětlete plán bezpečí.</li>
+<li>Ověřte, že dítě, rodič i pečovatel rozumí plánu a vědí, co se bude dít během následujících 24 hodin (případně déle).</li>
+<li>Ujistěte dítě o vztahu s rodičem – že o rodiče nepřichází a že se situace řeší pro jeho bezpečí.</li>
+<li>Plán bezpečí je jednotný pro všechny zúčastněné, pouze s ohledem na způsob komunikace s dítětem (vysvětlit, uklidnit, ujistit).</li>
+</ul>
+<h4>Spolupráce a ověření porozumění</h4>
+<ul>
+<li>V tištěné i elektronické formě předejte kontakty na odborníky, případně zajistit intervenci.</li>
+<li>Navažte spojení s AD nebo jinou sociální/pobytovou službou v rámci case managementu.</li>
+<li>Dotazem ověřte, zda dítě rozumí, kam jde, co se bude dít a kdo mu pomáhá.</li>
+</ul>
+<hr/>
+<p><strong>Nástroje:</strong> Plán bezpečí (s dítětem, rodičem, pečovatelem) • Komunikační techniky pro práci s dětmi • Case management, kontakty na odborníky </p>
+<p><strong>Právní rámec:</strong>:• zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí 
+</ul></div>
+</div>
+<!-- Step 3 -->
+<div class="step-card urgent">
+<div class="step-number">3</div>
+<div class="step-body">
+<strong>Předejte informace dítěti a rodině.</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+<div class="extraContent hidden">
+<p><strong>Časový rámec:</strong> Bezodkladně </p>
+<h4>Poskytnutí krizové a okamžité pomoci</h4>
+    <ul>
+      <li>Dle situace rozpoznejte, zda a jakou formu krizové či jiné okamžité intervence dítě nebo rodič potřebuje.</li>
+      <li>Předejte (i vytištěné) kontakty na potřebná pracoviště — např. Krizová intervence (KI), Intervenční centrum (IC), Krizová linka.</li>
+    </ul>
+
+    <h4>Ověření porozumění a dostupnosti pomoci</h4>
+    <ul>
+      <li>Ověřte, zda dítě i rodič v domácnosti rozumí předaným informacím, zda mají funkční telefon a vědí, jak se spojit s pomocí.</li>
+    </ul>
+
+    <h4>Informování rodičů o právech a povinnostech</h4>
+    <ul>
+      <li>Rodičům srozumitelně sdělte a vysvětlete jejich práva a povinnosti vůči dítěti.</li>
+      <li>Informace předejte osobně, popř. elektronicky zaslat v tištěné nebo digitální podobě.</li>
+    </ul>
+
+    <hr>
+    <p><strong>Nástroje:</strong> Kontakty na krizové linky • Informace k nastalé situaci • Informační leták pro děti • Informační leták pro rodiče a pečující osoby</p>
+    <p><strong>Právní rámec:</strong> zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí • Úmluva o právech dítěte • Úmluva o ochraně lidských práv • Listina základních práv a svobod</p>
+  </div>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="step-card urgent">
+<div class="step-number">4</div>
+<div class="step-body">
+<strong>Zapojte odborníky + podnikněte potřebné právní kroky.</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+<div class="extraContent hidden">
+<p><strong>Časový rámec:</strong> Bezodkladně </p>
+<ul>
+  <h4>Okamžité kroky k ochraně dítěte</h4>
+    <ul>
+      <li>V případě vyhodnocení naléhavosti a zjištění syndromu CAN podnikněte okamžité kroky vedoucí k ochraně oběti (viz Metodika DN – vedlejší list).</li>
+      <li>Vysvětlete zvolený postup a nabídněte podporu při realizaci konkrétních kroků.</li>
+    </ul>
+
+    <h4>Nároky a právní úkony</h4>
+    <ul>
+      <li>V případě pozdějšího nároku na úhradu škody dítěte zajistěte potřebné právní úkony, např.:
+        <ul>
+          <li>zastupujte dítě v rámci opatrovnického trestního řízení nebo přestupkového řízení,</li>
+          <li>podejte návrh na ustanovení zmocněnce nebo pomozte s uplatněním náhrady škody.</li>
+        </ul>
+      </li>
+    </ul>
+
+    <h4>Zajištění bezpečí při setrvání v rodině</h4>
+    <ul>
+      <li>Pokud dítě zůstává v péči druhého rodiče, opakovaně zdůrazňujte, že rodič nesmí vpustit vykázanou osobu zpět do obydlí.</li>
+      <li>Upozorněte, že v opačném případě nese rodič nevyhnutelné právní následky.</li>
+    </ul>
+
+    <hr>
+    <p><strong>Nástroj:</strong> Materiály k použití (DN, nárok na úhradu škody), Postup praktických lékařů pro děti a dorost při podezření na syndrom CAN, Metodika a výzkumy | Centrum LOCIKA, Infografiky a materiály Centra LOCIKA</p>
+    <p><strong>Právní rámec:</strong> • zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí: § 10 odst. 3 písm. d) a § 38 odst. 2 písm. a) ve spojení s odst. 5 písm. c), d) popř. g) • Zákon č. 40/2009 Sb. Zákon trestní zákoník • Zákon č. 141/1961 Sb. Zákon o trestním řízení soudním (trestní řád) • Zákon č. 45/2013 Sb. Zákon o obětech trestných činů a o změně některých zákonů (zákon o obětech trestných činů) • Zákon č. 218/2003 Sb. Zákon o odpovědnosti mládeže za protiprávní činy a o soudnictví ve věcech mládeže a o změně některých zákonů (zákon o soudnictví ve věcech mládeže) • Zákon č. 89/2012 Sb. Zákon občanský zákoník • Zákon č. 78/2025 Sb. Zákon, kterým se mění zákon č. 89/2012 Sb., občanský zákoník, ve znění pozdějších předpisů, a další zákony v souvislosti s potíráním domácího násilí • Zákon č. 273/2008 Sb. Zákon o Policii České republiky • Zákon č. 292/2013 Sb. Zákon o zvláštních řízeních soudních • Zákon č. 108/2006 Sb. Zákon o sociálních službách • Zákon č. 372/2011 Sb. Zákon o zdravotních službách a podmínkách jejich poskytování (zákon o zdravotních službách).</p>
+  </div>
+</div>
+</div>
+<!-- Step 5 -->
+<div class="step-card urgent">
+<div class="step-number">5</div>
+<div class="step-body">
+<strong>Připravte dítě na přemístění a poskytněte informace rodině.</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+<div class="extraContent hidden">
+<p><strong>Časový rámec:</strong> Bezodkladně </p>
+<ul>
+ <h4>Ověření informovanosti dítěte</h4>
+    <ul>
+      <li>Ověřte si, že dítě se v situaci vyzná, chápe umístění mimo domov a ví, do jakého prostředí bude přemístěno.</li>
+      <li>Tuto informaci zaznamenejte v <strong>nástroji ověření postupu práce s ohroženým dítětem</strong> pro ověření informovanosti dítěte a jeho bezpečí.</li>
+    </ul>
+
+    <h4>Komunikace s místem umístění a rodiči</h4>
+    <ul>
+      <li>Kontaktujte místo umístění dítěte a poskytněte základní informace o jeho přesunu (kam a kdy bude dítě převezeno) — uvedeno v nástroji ověření postupu práce s ohroženým dítětem.</li>
+      <li>Rodičům sdělte, kam bude dítě umístěno, kdy a za jakých okolností mohou dítě navštívit.</li>
+      <li>o	Informujte dítě i rodiče o místě umístění. Pozor! Dle § 57 z. č. 359/1999 Sb., o sociálně-právní ochraně dětí, pokud v rodině docházelo k domácímu násilí, informace o pobytu se osobě, která se domácího násilí dopouštěla, nesděluje.</li>
+    </ul>
+
+    <h4>Předání informací a kontaktů</h4>
+    <ul>
+      <li>Rodičům sdělte a vysvětlete jejich práva a povinnosti vůči dítěti, informace předejte osobně nebo elektronicky.</li>
+      <li>Dítěti předejte kontakty na OSPOD a ověřte, že má telefon a může kontaktovat OSPOD či jinou službu.</li>
+      <li>Rodičům i dítěti předejte informační materiály o právech a povinnostech, které z nastalé situace vyplývají.</li>
+    </ul>
+
+    <hr>
+    <p><strong>Nástroje:</strong> Příprava na změnu • Informační leták pro děti • Informační leták pro rodiče</p>
+    <p><strong>Právní rámec:</strong> zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí • Úmluva o právech dítěte • Úmluva o ochraně lidských práv • Listina základních práv a svobod</p>
+  </div>
+</div>
+</div>
+<!-- Step 6 -->
+<div class="step-card orange">
+<div class="step-number">6</div>
+<div class="step-body">
+<strong>Zmapujte míru rizik.</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+  <div class="extraContent hidden">
+<ul>
+    <strong>Časový rámec:</strong> 2. den, do 24 hodin
+    <p><strong>Postup:</strong></p>
+    <ul>
+      <li>1) Zmapujte aktuální míru ohrožení dítěte
+-	Po návratu do kanceláře (či následující den) použijte nástroj Posouzení míry rizika
+-	Zaměřte se na péči, prostředí dítěte, jeho stabilitu a případná rizika (včetně situací, kdy dítě měnilo prostředí – NRP, ústavní zařízení).
+</li>
+      <li>2) Identifikujte dostupné podpůrné zdroje
+-	Ověřte, zda má dítě ve svém okolí vhodné osoby či prostředky, které mohou rodinu podpořit (rodina, příbuzní, blízké osoby).
+-	Posuďte, zda tyto zdroje mohou pomoci ke stabilizaci a sanaci rodiny.
+</li>
+    </ul>
+ <hr>
+    <p><strong>Právní rámec:</strong> • Zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí • Úmluva o právech dítěte; Úmluva o ochraně lidských práv; Listina základních práv a svobod </p>
+    
+  </div>
+</div>
+</div>
+<!-- Step 7 -->
+<div class="step-card orange">
+<div class="step-number">7</div>
+<div class="step-body">
+<strong>Ověřte plán bezpečí</strong>
+<br/><br/>
+  <button class="toggleBtn" type="button">Zobrazit více</button>
+  <div class="extraContent hidden">
+<ul>
+    <strong>Časový rámec:</strong> 2. den
+    <p><strong>Postup:</strong></p>
+    <ul>
+      <li>Ověřte, zda plán bezpečí funguje.</li>
+      <li>Pokud ano, můžete se posunout k plánování další práce s rodinou.</li>
+      <li>Pokud PB nefunguje, mapujte další možné zdroje pomoci rodině.</li>
+      <li>Na základě zmapování míry ohrožení dítěte se rozhodněte o dalším či jiném zajištění bezpečí dítěte.</li>
+    </ul>
+<hr>
+<p><strong>Nástroj:</strong> Ověření plánu bezpečí</p>
+    <p><strong>Právní rámec:</strong> • Zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí • Úmluvy: Úmluva o právech dítěte; Úmluva o ochraně lidských práv; Listina základních práv a svobod</p>
+     </div>
+</div>
+</div>
+<!-- Step 8 -->
+<div class="step-card orange">
+<div class="step-number">8</div>
+<div class="step-body">
+<strong>Buďte v osobním kontaktu s dítětem, vypracujte předběžný plán práce s dítětem a rodinou, zpracujte vyhodnocení a IPOD</strong>
+<br/><br/> 
+ <button class="toggleBtn" type="button">Zobrazit více</button>
+  <div class="extraContent hidden">
+<ul>
+<strong>Časový rámec:</strong> 2. den (nebo dle lhůty)
+   
+    <p><strong>Postup:</strong></p>
+    <ul>
+      <li>V rámci osobní návštěvy dítěte umístěného mimo rodinu využijte Pomocný nástroj k VSD (zejména u dětí v NRP).</li>
+      <li>Neopomeňte kontakt s rodinnými příslušníky a případnou zmínku o možné délce pobytu dítěte mimo vlastní prostředí.</li>
+      <li>Dle míry ohrožení volte vhodná opatření – případová či rodinná konference, povinnost využít odbornou poradenskou činnost nebo uložení výchovného opatření.</li>
+      <li>Nejpozději do 1 měsíce od zařazení dítěte do evidence vypracujte podrobné VSD a IPOD se zaměřením na potřeby, ochranu a rizika dítěte.</li>
+    </ul>
+<hr>
+ <p><strong>Nástroj:</strong> Materiály pro přímou práci s dítětem a rodinou</p>
+    <p><strong>Právní rámec:</strong></p> • zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí: § 9a odst. 1, 2; 
+• Preventivní a poradenská činnost podle § 10 odst. 1 až 3 a 5, § 11 odst. 1, 2; 
+• Opatření na ochranu dětí podle § 13 odst. 1 písm. b) (dohled), § 14 odst. 1 (návrhy k soudu), § 15 (neodkladná péče), § 16 (předběžná opatření)
+  </div>
+</div>
+</div>
+<!-- Step 9 -->
+<div class="step-card orange">
+<div class="step-number">9</div>
+<div class="step-body">
+<strong>Přehodnoťte míru naléhavosti</strong>
+<br></br>
+ <button class="toggleBtn" type="button">Zobrazit více</button>
+  <div class="extraContent hidden">
+<ul>
+    <p><strong>Časový rámec:</strong> 7 dní (nebo dle lhůty)</p>
+  
+    <p><strong>Postup:</strong></p>
+    <ul>
+      <li>Využijte nástroj Posouzení míry rizika a dle výsledku učiňte další opatření:</li>
+      <li>a) Rizika trvají nebo se zvýšila → zvyšte ochranu, přijměte silnější opatření.</li>
+      <li>b) Rizika se snížila → zmírňete ochranu nebo přejděte do nenaléhavého přístupu.</li>
+    </ul>
+<hr>
+ <p><strong>Nástroj</strong> Posouzení naléhavosti situace</p>
+    <p><strong>Právní rámec:</strong></p> • zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí: § 10 odst. 3 písm. c) (pravidelné vyhodnocování), odst. 5 písm. c) (pravidelné aktualizace IPOD).
+  </div>
+</div>
+</div>
+</div>
+</div>
+<!-- NON-URGENT CONTENT -->
+<div class="hidden" id="nonUrgentContent">
+<div class="result-box result-nonurgent">
+<strong>Nenaléhavá situace — plán a doporučení</strong>
+<div class="small">Všechny odpovědi NE → případ zpracujte individuálně (nejpozději do 30 dnů).</div>
+</div>
+<div class="steps">
+<!-- Nenaléhavé kroky 1–6 s rozbalitelnými detaily -->
+<!-- Step 1 -->
+<div class="step-card urgent">
+<div class="step-number">1</div>
+<div class="step-body">
+<strong>Informujte dítě a rodinu.</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+<div class="extraContent hidden">
+<p><strong>Časový rámec:</strong> Bezodkladně </p>
+<ul>
+<li>Vzhledem k tomu, že dítě není bezprostředně ohroženo na životě, zvažte, zda může zůstat ve svém domácím prostředí a v péči zákonného zástupce, je však nutné brát na zřetel, že dítě ohroženo je, a tudíž spadá do § 6 ZSPOD.</li> 
+<li>Je nutné zmapovat situaci dítěte a zaměřit se na nejlepší zájem dítěte. Zjistěte, jakou podporu rodina potřebuje, posuďte rizika i ochranu dítěte a zaměřte se co nejvíce na potřeby dítěte.</li>
+<li> •	Situaci, která je momentálně v řešení, zaznamenejte do nástroje Ověření postupu práce s ohroženým dítětem.</li> 
+</ul>
+<hr>
+<p><strong>Nástroj:</strong> Kontakty na krizové linky + další informace k nastalé situaci </p>
+<p><strong>Právní rámec:</strong> • Zákon č. 500/2004 Sb., správní řád: § 4 odst. 1, 2 a 4; 
+• zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí: § 10 odst. 1, 2 a § 11 odst. 1, 2
+</div>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="step-card urgent">
+<div class="step-number">2</div>
+<div class="step-body">
+<strong>Zapojte odborníky.</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+<div class="extraContent hidden">
+<p><strong>Časový rámec:</strong> Bezodkladně </p>
+<ul>
+<li>Podle vzniklé situace a potřeby dítěte i rodiny předejte materiál, který nabízí vhodná doporučení, jak se zachovat v jednotlivých situacích.</li>
+<li>Předejte kontakty na OSPOD a ověřte si, zda dítě i rodič všemu rozumí a má možnost telefonického spojení.</li>
+<li>Dítěti můžete nechat doma různé materiály pojednávající o situacích, o kterých dříve nechtělo hovořit.</li>
+</ul>
+<hr>
+<p><strong>Nástroj:</strong> Materiály k použití (DN, nárok na úhradu škody) </p>
+<p><strong>Právní rámec:</strong> • zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí: § 10 odst. 3 písm. d) a § 38 odst. 2 písm. a) ve spojení s odst. 5 písm. c), d) popř. g) 
+</div>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="step-card urgent">
+<div class="step-number">3</div>
+<div class="step-body">
+<strong>Zmapujte potřeby + navažte osobní kontakt.</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+<div class="extraContent hidden">
+<p><strong>Časový rámec:</strong> Bezodkladně </p>
+<ul>
+<li>Osobní kontakt s dítětem a rodinou.</li>
+<li>Mapování potřeb a rizik.</li>
+</ul>
+<hr>
+<p><strong>Nástroj:</strong> Osobní kontakt s dítětem </p>
+<p><strong>Právní rámec:</strong> Zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí• Úmluvy: Úmluva o právech dítěte; Úmluva o ochraně lidských práv; Listina základních práv a svobod
+</div>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="step-card orange">
+<div class="step-number">4</div>
+<div class="step-body">
+<strong>Zpracujte podrobné vyhodnocení + sestavte předběžný plán.</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+<div class="extraContent hidden">
+<p><strong>Časový rámec:</strong> Dle zákona </p>
+<ul>
+<li>V rámci zákonné povinnosti vypracujte do 30 dnů podrobné VSD a IPOD a zaměřte se v nich na pojmenování rizik a ochrany, na potřeby dítěte a na možné zdroje pomoci v rodině a okolí.</li> 
+<li>Neopomeňte vypracovat případný Plán bezpečí, který jasně definuje, jak řešit situaci, která může nastat (např., když zůstane dítě doma, apod.)</li>
+<li> Realizujte PK, příp. RK.</li>
+</ul>
+<hr>
+<p><strong>Nástroj:</strong> Materiály pro práci s dítětem a rodinou</p>
+<p><strong>Právní rámec:</strong> Zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí • Úmluvy: Úmluva o právech dítěte; Úmluva o ochraně lidských práv; Listina základních práv a svobod
+</div>
+</div>
+</div>
+<!-- Step 5 -->
+<div class="step-card orange">
+<div class="step-number">5</div>
+<div class="step-body">
+<strong>Přehodnoťte situaci</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+<div class="extraContent hidden">
+<ul>
+<li>Dle míry ohrožení volte potřebná a z logiky případu i vhodná opatření jako je případová, či rodinná konference, můžete uložit povinnost využít odbornou poradenskou činnost, případně uložit některé z výchovných opatření.</li> 
+<li>•	Aktualizujte podrobné VSD a IPOD, zapracujte nové poznatky a informace k případu a znovu vyhodnoťte potřeby dítěte, ochranné a rizikové faktory.</li>
+</ul>
+<hr>
+<p><strong>Nástroj:</strong> Přehodnocení situace dítěte</p>
+<p><strong>Právní rámec:</strong> • zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí: § 10 odst. 3 písm. c) (pravidelné vyhodnocování), odst. 5 písm. c) (pravidelné aktualizace IPOD).
+</div>
+</div>
+</div>
+<!-- Step 6 -->
+<div class="step-card green">
+<div class="step-number">6</div>
+<div class="step-body">
+<strong>Aktualizujte informace a pracujte s nenaplněnými potřebami nebo riziky dětí v náhradní péči.</strong>
+<br/><br/>
+<button class="toggleBtn" type="button">Zobrazit více</button>
+<div class="extraContent hidden">
+<ul>
+<li>U dětí umístěných v náhradní rodinné péči nebo pobytových zařízeních je nutné průběžně sledovat nenaplněné potřeby a možná rizika. Zaměřte se zejména na:
+	<blockquote><li><strong>Frekvenci a načasování návštěv</strong> - Zajišťujte návštěvy v souladu s postupem, ale i s ohledem na situaci dítěte. Při změně prostředí (nové zařízení, nová forma péče) plánujte návštěvy častěji, ideálně ihned po přesunu – nikoliv až po několika měsících.
+ 
+	<li><strong>Kvalitní a konkrétní práci s plánovací dokumentací</strong> - 
+Formulujte cíle v IPOD jasně a srozumitelně podle metodiky. Sledujte a vyhodnocujte rizika v rámci ÚV, posuzujte, zda přijatá opatření skutečně naplňují svůj účel, a věnujte pozornost práci s PP i dalšími podpůrnými nástroji.
+</blockquote> 
+</ul>
+<hr>
+<p><strong>Právní rámec:</strong> Zákon č. 359/1999 Sb., o sociálně-právní ochraně dětí • Úmluvy: Úmluva o právech dítěte; Úmluva o ochraně lidských práv; Listina základních práv a svobod
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main>
+<footer style="max-width:var(--maxw);margin:14px auto 60px;color:var(--muted);font-size:0.9rem">
+<div>Poznámka: Nástroj je podpůrný — nenahrazuje odborné ani právní rozhodnutí. V naléhavých případech postupujte podle interních pravidel a zákonných povinností.</div>
+</footer>
+</div>
+<script>
+function getSelectedValue(name){
+  const el=document.querySelector('input[name="'+name+'"]:checked');
+  return el?el.value:null;
+}
+
+function evaluate(){
+  const names=['q1','q2','q3','q4','q5','q6','q7','q8','q9'];
+  let anyYes=false, anyAnswered=false;
+  names.forEach(n=>{
+    const v=getSelectedValue(n);
+    if(v!==null) anyAnswered=true;
+    if(v==='ano') anyYes=true;
+  });
+  if(!anyAnswered){
+    if(!confirm('Nejsou vyplněny žádné otázky. Považovat je za NE?')) return;
+  }
+  showResult(anyYes);
+}
+
+function showResult(isUrgent){
+  const resultWrap=document.getElementById('resultWrap');
+  const urgentContent=document.getElementById('urgentContent');
+  const nonUrgentContent=document.getElementById('nonUrgentContent');
+  resultWrap.innerHTML='';
+  if(isUrgent){
+    urgentContent.classList.remove('hidden');
+    nonUrgentContent.classList.add('hidden');
+    resultWrap.appendChild(urgentContent);
+    urgentContent.scrollIntoView({behavior:'smooth',block:'start'});
+  }else{
+    nonUrgentContent.classList.remove('hidden');
+    urgentContent.classList.add('hidden');
+    resultWrap.appendChild(nonUrgentContent);
+    nonUrgentContent.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+function resetForm(){
+  if(!confirm('Opravdu vymazat všechny odpovědi a výsledek?')) return;
+  document.querySelectorAll('input[type="radio"]').forEach(r=>r.checked=false);
+  document.getElementById('resultWrap').innerHTML='';
+}
+
+// Event bindings
+document.getElementById('evaluateBtn').addEventListener('click',evaluate);
+document.getElementById('resetBtn').addEventListener('click',resetForm);
+document.getElementById('triageForm').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){e.preventDefault();evaluate();}
+});
+
+// Toggle „Zobrazit více“
+document.querySelectorAll('.toggleBtn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    const extra=this.nextElementSibling;
+    extra.classList.toggle('hidden');
+    this.textContent=extra.classList.contains('hidden')?'Zobrazit více':'Skrýt';
+  });
+});
+</script>
+</body>
+</html>
