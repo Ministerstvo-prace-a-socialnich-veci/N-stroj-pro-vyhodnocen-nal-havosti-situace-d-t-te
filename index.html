@@ -172,8 +172,8 @@ button.schema-btn:hover {background: #278046;}
 <div class="hint">např. fyzické a psychické týrání, sexuální zneužívání, hrubé zanedbávání ohrožující normální vývoj</div>
 </div>
 <div class="radios">
-<label class="inline"><input name="q8" type="radio" value="ano"/> ANO</label>
-<label class="inline"><input name="q8" type="radio" value="ne"/> NE</label>
+<label class="inline"><input name="q10" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q10" type="radio" value="ne"/> NE</label>
 </div>
 </div>
 <div class="question-row">
@@ -181,8 +181,8 @@ button.schema-btn:hover {background: #278046;}
 <div class="hint">např. je nuceno ke krádežím, je nuceno k ublížení na zdraví</div>
 </div>
 <div class="radios">
-<label class="inline"><input name="q8" type="radio" value="ano"/> ANO</label>
-<label class="inline"><input name="q8" type="radio" value="ne"/> NE</label>
+<label class="inline"><input name="q11" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q11" type="radio" value="ne"/> NE</label>
 </div>
 </div>
 <div class="question-row">
@@ -190,8 +190,8 @@ button.schema-btn:hover {background: #278046;}
 <div class="hint">např. chce odejít z péče, hlásí šikanu</div>
 </div>
 <div class="radios">
-<label class="inline"><input name="q8" type="radio" value="ano"/> ANO</label>
-<label class="inline"><input name="q8" type="radio" value="ne"/> NE</label>
+<label class="inline"><input name="q12" type="radio" value="ano"/> ANO</label>
+<label class="inline"><input name="q12" type="radio" value="ne"/> NE</label>
 </div>
 </div>
 </div>
@@ -630,7 +630,7 @@ function getSelectedValue(name){
 }
 
 function evaluate(){
-  const names=['q1','q2','q3','q4','q5','q6','q7','q8','q9'];
+  const names=['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','q11','q12'];
   let anyYes=false, anyAnswered=false;
   names.forEach(n=>{
     const v=getSelectedValue(n);
